@@ -19,7 +19,7 @@ Double-click **geom-Pet.cmd**.
 ## Touch it
 
 - **Drag** — move it anywhere.
-- **Click** — like a tickle: two dot eyes appear and give one happy blink ( n   n ), a few small hearts open out from the middle, and one short line appears. Then it all gently fades.
+- **Click** — like a tickle: two dot eyes appear, squeeze shut in a long happy squint ( n   n ) and open again just before they fade, a few small hearts open out from the middle, and one short line appears. Then it all gently fades.
 - Only the shape itself answers a click. The empty space around it lets clicks pass through.
 - **Hover** — shows your *anchor*, the one thing you're doing right now.
 - **Right-click** — the menu:

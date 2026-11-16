@@ -520,16 +520,24 @@ function Build-Lines {
 # The blink is five key drawings. Each row is: seconds, how open (1 = a round dot,
 # 0 = the closed happy arch  n ), and a small size change.
 #   open -> widen (a little anticipation) -> closed -> hold the smile -> open
-$BlinkKeys = @(
-    @(0.0,       1.0, 1.00),
-    @((1 / 12),  1.0, 1.12),
-    @((4 / 12),  0.0, 1.05),
-    @((14 / 12), 0.0, 1.00),
-    @((19 / 12), 1.0, 1.00)
-)
-$BlinkStart  = 0.6                      # the eyes fade in first, then blink
-$BlinkClosed = $BlinkKeys[2][0]
-$BlinkDur    = $BlinkKeys[4][0]
+# It is a long blink: a happiness so large and sudden that the eyes stay shut in
+# their squint for most of the tickle. They open again only briefly, just before
+# the face fades away. So the two last keys depend on how long the words stay up.
+$BlinkStart  = 0.5                      # the eyes fade in open first, then squint
+$BlinkClosed = 4 / 12
+$BlinkKeys   = @()
+$BlinkDur    = 0.0
+function Set-BlinkKeys([double]$hold) {
+    $fadeOut = 0.7 + $hold - $BlinkStart        # when the face starts to fade, counted from the blink's start
+    $script:BlinkKeys = @(
+        @(0.0,              1.0, 1.00),
+        @((1 / 12),         1.0, 1.12),
+        @($BlinkClosed,     0.0, 1.05),
+        @(($fadeOut - 0.95), 0.0, 1.00),
+        @(($fadeOut - 0.50), 1.0, 1.00)
+    )
+    $script:BlinkDur = $fadeOut - 0.50
+}
 
 # The inbetweens: for any moment, the drawing between two keys. The spacing is
 # eased, so the eye moves slowly out of one key and slowly into the next.
@@ -847,6 +855,7 @@ $Hit.Add_MouseLeftButtonDown({
     $text = Get-NextLine
     $hold = 4.5 + 0.06 * $text.Length
     $now = $script:clock.Elapsed.TotalSeconds
+    Set-BlinkKeys $hold                              # squint for as long as the words stay up
     Set-EyeShape 1 1                                 # open dot eyes to begin with
     $S.tickT = $now; $S.fastUntil = $now + $hold + 2.6
     Add-Hearts ($BlinkStart + $BlinkClosed)          # the hearts open out as the eyes close
