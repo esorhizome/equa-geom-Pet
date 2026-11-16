@@ -1,0 +1,35 @@
+# geom-Pet's lines. One line of text per row.
+# Put  |  where the words should break onto a new row.
+# Rows that start with # are notes, and are never shown.
+# {thread} and {euler} are two special lines the pet writes itself.
+
+Just the next small step.
+Too much at once? | Pick the smallest piece.
+Write down where you are. | Then breathe.
+You don't have to hold it all. | Let a list hold it.
+Take your time.
+Maybe close one tab. Just one.
+Drop your shoulders. | Unclench your jaw.
+Look at something far away for a moment.
+A sip of water might help.
+{thread}
+{euler}
+The shape keeps turning, | even on foggy days.
+Pomodoro might help | maintain momentum.
+Do it for you.
+You know what? | I believe in you.
+You know what? | You've got this.
+Just breathe.
+It's safe to take time | to figure it out.
+Hey, that was cute, | thank you.
+Today is a good day. | You make it good.
+I'm grateful | that you're here.
+Breathe in, | breathe out.
+Some light stretching | might help.
+You will get this done.
+You will finish.
+Keep moving forward.
+I think you're capable | of getting this done.
+Tidy approach, | tidy results.
+Take one calm step, | then take another.
+No matter what... | Do the work anyway.

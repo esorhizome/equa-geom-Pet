@@ -19,7 +19,7 @@ Double-click **geom-Pet.cmd**.
 ## Touch it
 
 - **Drag** — move it anywhere.
-- **Click** — like a tickle: two happy closed eyes ( n   n ), a few small hearts open out from the middle, and one short line appears. Then it all gently fades.
+- **Click** — like a tickle: two dot eyes appear and give one happy blink ( n   n ), a few small hearts open out from the middle, and one short line appears. Then it all gently fades.
 - Only the shape itself answers a click. The empty space around it lets clicks pass through.
 - **Hover** — shows your *anchor*, the one thing you're doing right now.
 - **Right-click** — the menu:
@@ -48,13 +48,21 @@ None of them has more than 60 edges, so the pet stays light.
 
 ---
 
+## The lines
+
+The short lines the pet shows live in `lines.txt`, one per row.
+
+Add your own on a new row. Put `|` where the words should break onto a new row.
+
+Close the pet and start it again to see new lines.
+
+---
+
 ## Sound
 
-Two recorded tones, made by esorhizome in FL Studio Mobile (MiniSynth "Fifth", filtered, with reverb).
+One soft tone, made in code each time the pet starts: a root note with its fifth and octave, a gentle rise, then a short even fade.
 
-The higher one opens. The lower one closes.
-
-They live in `sounds/`. If that folder is missing, the pet makes a soft bell in code instead.
+It rings higher to open and lower to close.
 
 **♪ sound** in the menu turns it off.
 

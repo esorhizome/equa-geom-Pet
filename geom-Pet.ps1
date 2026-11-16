@@ -28,9 +28,9 @@ function Write-Log([string]$msg) {
 }
 
 # ---------------------------------------------------------------- small C# helpers
-# Bell(): a soft "cathedral" tone. Root + fifth + octave, each voice a slightly
-# detuned pair (a slow shimmer), a gentle 90 ms rise, then a long fade to a whisper.
-# No separate echo: the note simply leaves.
+# Bell(): one soft tone. Root + fifth + octave, plain and steady (no wobble):
+# a 90 ms rise, then it fades away evenly in under a second.
+# Higher (D) to open or begin, lower (A) to close or go back.
 if (-not ('GeomPetSound' -as [type])) {
 Add-Type -TypeDefinition @'
 using System;
@@ -41,23 +41,19 @@ public static class GeomPetSound {
     public static byte[] Bell(double root, double seconds, double volume) {
         int rate = 44100;
         int n = (int)(rate * seconds);
-        double[] ratio = { 1.0, 1.5, 2.0, 3.0 };
-        double[] amp   = { 1.0, 0.55, 0.20, 0.05 };
-        double[] tau   = { 1.10, 0.95, 0.65, 0.30 };
-        double attack = 0.09, tailFade = 0.30;
-        double norm = 0; foreach (double a in amp) norm += 2 * a;
+        double[] ratio = { 1.0, 1.5, 2.0 };
+        double[] amp   = { 1.0, 0.5, 0.18 };
+        double attack = 0.09, tailFade = 0.03;
+        double norm = 0; foreach (double a in amp) norm += a;
         short[] pcm = new short[n];
         for (int i = 0; i < n; i++) {
             double t = (double)i / rate;
-            double rise = t < attack ? 0.5 - 0.5 * Math.Cos(Math.PI * t / attack) : 1.0;
+            // rise in a straight line, then fall away smoothly to about a 350th of the peak
+            double env = t < attack ? t / attack : Math.Exp(-5.858 * (t - attack) / (seconds - attack));
             double tail = t > seconds - tailFade ? (seconds - t) / tailFade : 1.0;
             double s = 0;
-            for (int k = 0; k < ratio.Length; k++) {
-                double f = root * ratio[k];
-                s += amp[k] * Math.Exp(-t / tau[k]) *
-                     (Math.Sin(2 * Math.PI * f * t) + Math.Sin(2 * Math.PI * (f + 0.7) * t + 1.3));
-            }
-            double v = s / norm * rise * tail * volume;
+            for (int k = 0; k < ratio.Length; k++) s += amp[k] * Math.Sin(2 * Math.PI * root * ratio[k] * t);
+            double v = s / norm * env * tail * volume;
             if (v > 1) v = 1; if (v < -1) v = -1;
             pcm[i] = (short)(v * 32767);
         }
@@ -101,6 +97,7 @@ public static class GeomPetNative {
 # ---------------------------------------------------------------- settings
 $S = @{
     size = 160; solid = 'cube'; sound = $true; anchor = ''; left = $null; top = $null
+    tickT = -100.0; fastUntil = -100.0; tickMs = 40; eyeMoved = $false
     yaw = 0.6; pitch = 0.35; spin = 0.0; leanX = 0.0; leanY = 0.0; eyeX = 0.0; eyeY = 0.0
     last = 0.0; breathStart = -100.0; breathEnd = -100.0; rest = $false; closing = $false
     lastCursor = $null; lastMove = 0.0; fallback = $false; renderErr = $false
@@ -222,23 +219,28 @@ function New-Solid([string]$name) {
 }
 
 # ---------------------------------------------------------------- the lines
-# Hand-written. Thirteen of them, shuffled like a deck so none repeats until
-# all have been seen. Two are worked out live from the shape and your anchor.
+# The lines live in lines.txt, beside this script: one line of text per row,
+# with  |  where the words should break onto a new row. Rows that start with #
+# are notes. They are shuffled like a deck, so none repeats until all have been
+# seen. Two special rows, {thread} and {euler}, are worked out live from your
+# anchor and the shape.
+# If lines.txt is missing, these three stand in.
 $Deck = @(
     'Just the next small step.'
-    "Too much at once?`nPick the smallest piece."
-    "Write down where you are.`nThen breathe."
-    "You don't have to hold it all.`nLet a list hold it."
-    'Slow is allowed.'
-    'Close one tab. Only one.'
-    "Drop your shoulders.`nUnclench your jaw."
-    'Look at something far away for a moment.'
-    'A sip of water might help.'
     '{thread}'
     '{euler}'
-    "The shape keeps turning,`neven on foggy days."
-    "It's fine to stop for a minute."
 )
+
+$LinesFile = Join-Path $PSScriptRoot 'lines.txt'
+if (Test-Path -LiteralPath $LinesFile) {
+    try {
+        $fromFile = @(Get-Content -LiteralPath $LinesFile -Encoding UTF8 |
+            ForEach-Object { $_.Trim() } |
+            Where-Object { $_ -and -not $_.StartsWith('#') } |
+            ForEach-Object { ($_ -split '\s*\|\s*') -join "`n" })
+        if ($fromFile.Count -gt 0) { $Deck = $fromFile }
+    } catch { Write-Log "lines.txt could not be read: $_" }
+}
 
 function Get-NextLine {
     if (-not $S.bag -or $S.bag.Count -eq 0) {
@@ -277,7 +279,7 @@ if ($Check) {
         Write-Host ('  {0,-22} V/E {1,-6} expected {2,-6} V-E+F={3}  {4}' -f $nm, $got, $expect[$nm], $euler, $(if ($got -eq $expect[$nm]) { 'ok' } else { 'MISMATCH' }))
     }
     $S.geo = New-Solid 'cube'
-    $seen = @(); for ($i = 0; $i -lt 13; $i++) { $seen += (Get-NextLine) }
+    $seen = @(); for ($i = 0; $i -lt $Deck.Count; $i++) { $seen += (Get-NextLine) }
     Write-Host ('  deck: {0} lines drawn, {1} distinct' -f $seen.Count, ($seen | Select-Object -Unique).Count)
     $w = [GeomPetSound]::Bell(587.33, 2.8, 0.42)
     Write-Host ('  tone: {0} bytes ({1:N1} s)' -f $w.Length, (($w.Length - 44) / 88200))
@@ -431,19 +433,9 @@ $EKF    = [System.Windows.Media.Animation.EasingDoubleKeyFrame]
 $Tones = @{}
 function Initialize-Sound {
     foreach ($nm in 'up', 'down') {
-        # The recorded tones in sounds\ (open = higher, close = lower) are used when
-        # they are there. Without them, a soft bell is made in code instead.
-        $shipped = Join-Path $PSScriptRoot ('sounds\' + $(if ($nm -eq 'up') { 'open.wav' } else { 'close.wav' }))
-        $bytes = $null
-        if (Test-Path -LiteralPath $shipped) {
-            try { $bytes = [IO.File]::ReadAllBytes($shipped) } catch { Write-Log "sound file: $_" }
-        }
-        if (-not $bytes) {
-            $root  = if ($nm -eq 'up') { 587.33 } else { 440.0 }   # D5+A5 to open, A4+E5 to close
-            $bytes = [GeomPetSound]::Bell($root, 2.8, 0.42)
-        }
-        $secs = 2.8
-        try { $secs = ($bytes.Length - 44) / [double][BitConverter]::ToInt32($bytes, 28) } catch {}
+        $root  = if ($nm -eq 'up') { 587.33 } else { 440.0 }   # D to open, A to close
+        $bytes = [GeomPetSound]::Bell($root, 0.9, 0.07)
+        $secs  = 0.9
         $path  = Join-Path $DataDir "$nm.wav"
         try { [IO.File]::WriteAllBytes($path, $bytes) } catch { Write-Log "wav write: $_" }
         $pool = @()
@@ -522,21 +514,64 @@ function Build-Lines {
     $S.lines = $lines
 }
 
-# Two small arches for eyes:  n   n  (the top half of a circle each): happy, closed eyes.
-# They are only seen for a while after a click, like a tickle.
+# The face is only seen for a while after a click, like a tickle.
+# Two dot eyes appear, give one happy blink, and fade again.
+#
+# The blink is five key drawings. Each row is: seconds, how open (1 = a round dot,
+# 0 = the closed happy arch  n ), and a small size change.
+#   open -> widen (a little anticipation) -> closed -> hold the smile -> open
+$BlinkKeys = @(
+    @(0.0,       1.0, 1.00),
+    @((1 / 12),  1.0, 1.12),
+    @((4 / 12),  0.0, 1.05),
+    @((14 / 12), 0.0, 1.00),
+    @((19 / 12), 1.0, 1.00)
+)
+$BlinkStart  = 0.6                      # the eyes fade in first, then blink
+$BlinkClosed = $BlinkKeys[2][0]
+$BlinkDur    = $BlinkKeys[4][0]
+
+# The inbetweens: for any moment, the drawing between two keys. The spacing is
+# eased, so the eye moves slowly out of one key and slowly into the next.
+function Get-BlinkPose([double]$bt) {
+    if ($bt -le 0) { return @(1.0, 1.0) }
+    if ($bt -ge $BlinkDur) { return @(1.0, 1.0) }
+    $i = 0
+    while ($i -lt ($BlinkKeys.Length - 2) -and $bt -ge $BlinkKeys[$i + 1][0]) { $i++ }
+    $a = $BlinkKeys[$i]; $b = $BlinkKeys[$i + 1]
+    $u = ($bt - $a[0]) / ($b[0] - $a[0])
+    $u = $u * $u * (3 - 2 * $u)
+    $open = $a[1] + ($b[1] - $a[1]) * $u
+    $scale = $a[2] + ($b[2] - $a[2]) * $u
+    return @($open, $scale)
+}
+
+# Draw both eyes at one openness. The top lid is always the same half circle.
+# The lower lid is half an ellipse that swings from below (a full dot), through
+# flat, up to meet the top lid (the arch).
+function Set-EyeShape([double]$open, [double]$scale) {
+    $r = $S.eyeR * $scale
+    $k = 2 * [math]::Max(0.0, [math]::Min(1.0, $open)) - 1
+    $ry = [math]::Max(0.01, [math]::Abs($k) * $r)
+    $sweep = 0; if ($k -ge 0) { $sweep = 1 }
+    $text = [string]::Format($Inv, 'M {0},0 A {1},{1} 0 0 1 {1},0 A {1},{2} 0 0 {3} {0},0 Z', (-$r), $r, $ry, $sweep)
+    $geo = [System.Windows.Media.Geometry]::Parse($text)
+    $geo.Freeze()
+    foreach ($eye in $S.eyes) { $eye.Data = $geo }
+}
+
 function Update-Face {
     $Face.Children.Clear()
-    $r = [math]::Max(3.0, $S.size * 0.032)
-    $arch = [System.Windows.Media.Geometry]::Parse([string]::Format($Inv, 'M 0,{0} A {0},{0} 0 0 1 {1},{0}', $r, (2 * $r)))
     $eyes = New-Object 'System.Windows.Shapes.Path[]' 2
     for ($i = 0; $i -lt 2; $i++) {
         $eye = New-Object System.Windows.Shapes.Path
-        $eye.Data = $arch; $eye.Stroke = $LineBrush
+        $eye.Stroke = $LineBrush; $eye.Fill = $LineBrush
         $eye.StrokeThickness = [math]::Max(1.4, $S.size * 0.006)
-        $eye.StrokeStartLineCap = 'Round'; $eye.StrokeEndLineCap = 'Round'
+        $eye.StrokeLineJoin = 'Round'
         [void]$Face.Children.Add($eye); $eyes[$i] = $eye
     }
-    $S.eyes = $eyes; $S.eyeR = $r
+    $S.eyes = $eyes; $S.eyeR = [math]::Max(3.0, $S.size * 0.032)
+    Set-EyeShape 1 1
 }
 
 # Two or three small hearts open out from the middle of the shape, slow down,
@@ -608,7 +643,7 @@ function Set-Size([int]$px) {
 function Set-Rest([bool]$on) {
     $S.rest = $on
     if ($on) { Fade $win 0.2 1.6; $timer.Interval = [TimeSpan]::FromMilliseconds(100) }
-    else     { Fade $win 0.92 1.0; $timer.Interval = [TimeSpan]::FromMilliseconds(40) }
+    else     { Fade $win 0.92 1.0; $timer.Interval = [TimeSpan]::FromMilliseconds(40); $S.tickMs = 40 }
 }
 
 function Start-Breathe {
@@ -688,10 +723,21 @@ function Render {
         $rad  = $S.size * 0.28 * $breath
         [GeomPetDraw]::Frame($S.geo.V, $S.geo.E, $S.lines, $S.yaw, $S.pitch, $S.leanX, $S.leanY, $half, $rad, $CAM)
         # the eyes sit a little above the middle and drift a touch toward the cursor
-        $er = $S.eyeR; $ey = $half - $S.size * 0.05 - $er + $S.eyeY * $S.size * 0.012
+        $ey = $half - $S.size * 0.05 + $S.eyeY * $S.size * 0.012
         $ex = $S.eyeX * $S.size * 0.02
-        $Canvas::SetLeft($S.eyes[0], $half - $S.size * 0.085 - $er + $ex); $Canvas::SetTop($S.eyes[0], $ey)
-        $Canvas::SetLeft($S.eyes[1], $half + $S.size * 0.085 - $er + $ex); $Canvas::SetTop($S.eyes[1], $ey)
+        $Canvas::SetLeft($S.eyes[0], $half - $S.size * 0.085 + $ex); $Canvas::SetTop($S.eyes[0], $ey)
+        $Canvas::SetLeft($S.eyes[1], $half + $S.size * 0.085 + $ex); $Canvas::SetTop($S.eyes[1], $ey)
+        # the blink: a fresh drawing of the eyes on every frame while it lasts
+        $bt = $t - $S.tickT - $BlinkStart
+        if ($bt -ge 0 -and $bt -le $BlinkDur) {
+            $ps = Get-BlinkPose $bt
+            Set-EyeShape $ps[0] $ps[1]; $S.eyeMoved = $true
+        } elseif ($S.eyeMoved) { Set-EyeShape 1 1; $S.eyeMoved = $false }
+        # run at about 60 frames a second while the tickle plays, then settle back to 25
+        if (-not $S.rest) {
+            $want = 40; if ($t -lt $S.fastUntil) { $want = 16 }
+            if ($S.tickMs -ne $want) { $S.tickMs = $want; $timer.Interval = [TimeSpan]::FromMilliseconds($want) }
+        }
         Update-Hearts $dt
     } catch {
         if (-not $S.renderErr) { Write-Log "render: $_"; $S.renderErr = $true }
@@ -798,9 +844,12 @@ $Hit.Add_MouseLeftButtonDown({
     if ($moved) { Save-Settings; return }
     if ($S.rest) { Set-Rest $false; return }
     $S.spin += 1.8                                   # a little flick, like a nudged globe
-    Add-Hearts
     $text = Get-NextLine
     $hold = 4.5 + 0.06 * $text.Length
+    $now = $script:clock.Elapsed.TotalSeconds
+    Set-EyeShape 1 1                                 # open dot eyes to begin with
+    $S.tickT = $now; $S.fastUntil = $now + $hold + 2.6
+    Add-Hearts ($BlinkStart + $BlinkClosed)          # the hearts open out as the eyes close
     $LineText.Text = $text
     Show-Soft $LinePlate $hold                       # words on a soft dark plate, readable over anything
     Show-Soft $Face $hold                            # the eyes come and go with the words
