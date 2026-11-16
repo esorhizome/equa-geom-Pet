@@ -6,7 +6,7 @@
   keeping an eye on you.
 
   Left-drag ...... move it
-  Click .......... one short line (and a little spin)
+  Click .......... one short line in the middle, a little spin, a few hearts
   Hover .......... shows your anchor (the one thing you're doing)
   Right-click .... anchor · breathe · shape · size (a slider) · sound · rest · close
 
@@ -311,6 +311,21 @@ $WinXaml = @'
           <DropShadowEffect Color="#000000" BlurRadius="6" ShadowDepth="0" Opacity="0.55"/>
         </Canvas.Effect>
       </Canvas>
+      <Canvas x:Name="Face" IsHitTestVisible="False" Opacity="0">
+        <Canvas.Effect>
+          <DropShadowEffect Color="#000000" BlurRadius="6" ShadowDepth="0" Opacity="0.55"/>
+        </Canvas.Effect>
+      </Canvas>
+      <Canvas x:Name="Hearts" IsHitTestVisible="False"/>
+    </Grid>
+    <Grid x:Name="LineHost" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Top" Height="160" IsHitTestVisible="False">
+      <TextBlock x:Name="LineText" Opacity="0" FontFamily="Segoe UI" FontSize="14"
+                 Foreground="#F2F4F6" TextWrapping="Wrap" TextAlignment="Center" MaxWidth="240"
+                 HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,36,0,0">
+        <TextBlock.Effect>
+          <DropShadowEffect Color="#000000" BlurRadius="8" ShadowDepth="0" Opacity="0.95"/>
+        </TextBlock.Effect>
+      </TextBlock>
     </Grid>
     <StackPanel Grid.Row="1" HorizontalAlignment="Center" IsHitTestVisible="False" Margin="0,4,0,0">
       <StackPanel.Effect>
@@ -318,8 +333,6 @@ $WinXaml = @'
       </StackPanel.Effect>
       <TextBlock x:Name="AnchorText" Opacity="0" FontFamily="Segoe UI" FontSize="13" FontStyle="Italic"
                  Foreground="#E6EEF2F6" TextWrapping="Wrap" TextAlignment="Center" MaxWidth="240" Margin="0,0,0,4"/>
-      <TextBlock x:Name="LineText" Opacity="0" FontFamily="Segoe UI" FontSize="14"
-                 Foreground="#F2F4F6" TextWrapping="Wrap" TextAlignment="Center" MaxWidth="240"/>
     </StackPanel>
   </Grid>
 </Window>
@@ -395,11 +408,20 @@ $Hit        = $win.FindName('Hit')
 $Shape      = $win.FindName('Shape')
 $AnchorText = $win.FindName('AnchorText')
 $LineText   = $win.FindName('LineText')
+$LineHost   = $win.FindName('LineHost')
+$Face       = $win.FindName('Face')
+$Hearts     = $win.FindName('Hearts')
 
 $LineBrush = New-Object System.Windows.Media.SolidColorBrush ([System.Windows.Media.Color]::FromRgb(236, 239, 243))
 $LineBrush.Freeze()
-$Core = New-Object System.Windows.Shapes.Ellipse
-$Core.Width = 5; $Core.Height = 5; $Core.Fill = $LineBrush; $Core.Opacity = 0.9
+$HeartBrush = New-Object System.Windows.Media.SolidColorBrush ([System.Windows.Media.Color]::FromRgb(244, 163, 192))
+$HeartBrush.Freeze()
+# A heart whose sides bow outward all the way down to the point (no inward curl
+# near the tip). Four curves, drawn in a box from -1 to 1 across.
+$HeartGeo = [System.Windows.Media.Geometry]::Parse('M 0,-0.35 C 0.25,-0.8 0.95,-0.75 1,-0.2 C 1.03,0.25 0.35,0.8 0,1 C -0.35,0.8 -1.03,0.25 -1,-0.2 C -0.95,-0.75 -0.25,-0.8 0,-0.35 Z')
+$HeartGeo.Freeze()
+$S.hearts = New-Object System.Collections.ArrayList
+$Inv = [Globalization.CultureInfo]::InvariantCulture
 
 $CAM    = 3.6                   # camera distance, in sphere radii
 $Canvas = [System.Windows.Controls.Canvas]
@@ -463,6 +485,15 @@ function Fade($el, [double]$to, [double]$sec, [double]$delay = 0, [scriptblock]$
     $el.BeginAnimation($Opac, $a)
 }
 
+# Fade something in gently, hold it, then let it fade away again.
+function Show-Soft($el, [double]$hold) {
+    $a = New-Object System.Windows.Media.Animation.DoubleAnimationUsingKeyFrames
+    [void]$a.KeyFrames.Add($EKF::new(1.0, (KT 0.7)))
+    [void]$a.KeyFrames.Add($EKF::new(1.0, (KT (0.7 + $hold))))
+    [void]$a.KeyFrames.Add($EKF::new(0.0, (KT (2.3 + $hold))))
+    $el.BeginAnimation($Opac, $a)
+}
+
 function Show-Text($tb, [string]$text, [double]$hold) {
     $tb.Text = $text
     $a = New-Object System.Windows.Media.Animation.DoubleAnimationUsingKeyFrames
@@ -492,6 +523,58 @@ function Build-Lines {
     $S.lines = $lines
 }
 
+# Two small arches for eyes:  n   n  (the top half of a circle each).
+# They are only seen for a while after a click, like a tickle.
+function Update-Face {
+    $Face.Children.Clear()
+    $r = [math]::Max(3.0, $S.size * 0.032)
+    $arch = [System.Windows.Media.Geometry]::Parse([string]::Format($Inv, 'M 0,{0} A {0},{0} 0 0 1 {1},{0}', $r, (2 * $r)))
+    $eyes = New-Object 'System.Windows.Shapes.Path[]' 2
+    for ($i = 0; $i -lt 2; $i++) {
+        $eye = New-Object System.Windows.Shapes.Path
+        $eye.Data = $arch; $eye.Stroke = $LineBrush
+        $eye.StrokeThickness = [math]::Max(1.4, $S.size * 0.006)
+        $eye.StrokeStartLineCap = 'Round'; $eye.StrokeEndLineCap = 'Round'
+        [void]$Face.Children.Add($eye); $eyes[$i] = $eye
+    }
+    $S.eyes = $eyes; $S.eyeR = $r
+}
+
+# Two or three small hearts drift up from the top of the shape, then fade.
+function Add-Hearts {
+    $count = Get-Random -Minimum 2 -Maximum 4
+    for ($i = 0; $i -lt $count; $i++) {
+        $w = [math]::Max(10.0, $S.size * (0.06 + 0.04 * (Get-Random -Maximum 100) / 100))
+        $el = New-Object System.Windows.Shapes.Path
+        $el.Data = $HeartGeo; $el.Stretch = 'Uniform'; $el.Width = $w; $el.Height = $w
+        $el.Stroke = $HeartBrush; $el.StrokeThickness = 1.3; $el.StrokeLineJoin = 'Round'; $el.Opacity = 0
+        [void]$Hearts.Children.Add($el)
+        [void]$S.hearts.Add(@{
+            el = $el; w = $w; age = -0.45 * $i; life = 3.4
+            x = $S.size / 2 + $S.size * 0.16 * ((Get-Random -Maximum 200) - 100) / 100
+            y = $S.size * 0.30; vy = $S.size * 0.085; wob = $S.size * 0.02
+            ph = (Get-Random -Maximum 628) / 100
+        })
+    }
+}
+
+function Update-Hearts([double]$dt) {
+    for ($i = $S.hearts.Count - 1; $i -ge 0; $i--) {
+        $h = $S.hearts[$i]
+        $h.age += $dt
+        if ($h.age -lt 0) { continue }
+        $q = $h.age / $h.life
+        if ($q -ge 1) { $Hearts.Children.Remove($h.el); $S.hearts.RemoveAt($i); continue }
+        $h.y -= $h.vy * $dt
+        $x = $h.x + [math]::Sin($h.age * 2.2 + $h.ph) * $h.wob
+        # gentle entry, gentle exit: a slow smooth rise in, a long smooth fade out
+        $in = [math]::Min(1, $q / 0.25); $out = [math]::Min(1, (1 - $q) / 0.45)
+        $h.el.Opacity = 0.9 * ($in * $in * (3 - 2 * $in)) * ($out * $out * (3 - 2 * $out))
+        $Canvas::SetLeft($h.el, $x - $h.w / 2)
+        $Canvas::SetTop($h.el, $h.y - $h.w / 2)
+    }
+}
+
 function Set-Solid([string]$name, [switch]$Soft) {
     $S.solid = $name
     if ($Soft) {
@@ -510,6 +593,11 @@ function Set-Size([int]$px) {
     $win.Left  += ($oldW - $win.Width) / 2
     $win.Top   += ($oldSize - $px) / 2
     $AnchorText.MaxWidth = $win.Width - 20; $LineText.MaxWidth = $win.Width - 20
+    # the line of text sits in the middle of the shape, just under the eyes
+    $LineHost.Height = $px
+    $LineText.Margin = New-Object System.Windows.Thickness 0, ($px * 0.22), 0, 0
+    $LineText.FontSize = [math]::Max(14, [math]::Min(22, $px * 0.045))
+    Update-Face
 }
 
 function Set-Rest([bool]$on) {
@@ -594,8 +682,12 @@ function Render {
         $half = $S.size / 2
         $rad  = $S.size * 0.28 * $breath
         [GeomPetDraw]::Frame($S.geo.V, $S.geo.E, $S.lines, $S.yaw, $S.pitch, $S.leanX, $S.leanY, $half, $rad, $CAM)
-        $Canvas::SetLeft($Core, $half + $S.eyeX * $rad * 0.45 - 2.5)
-        $Canvas::SetTop($Core,  $half + $S.eyeY * $rad * 0.45 - 2.5)
+        # the eyes sit a little above the middle and drift a touch toward the cursor
+        $er = $S.eyeR; $ey = $half - $S.size * 0.05 - $er + $S.eyeY * $S.size * 0.012
+        $ex = $S.eyeX * $S.size * 0.02
+        $Canvas::SetLeft($S.eyes[0], $half - $S.size * 0.085 - $er + $ex); $Canvas::SetTop($S.eyes[0], $ey)
+        $Canvas::SetLeft($S.eyes[1], $half + $S.size * 0.085 - $er + $ex); $Canvas::SetTop($S.eyes[1], $ey)
+        Update-Hearts $dt
     } catch {
         if (-not $S.renderErr) { Write-Log "render: $_"; $S.renderErr = $true }
     }
@@ -701,8 +793,11 @@ $Hit.Add_MouseLeftButtonDown({
     if ($moved) { Save-Settings; return }
     if ($S.rest) { Set-Rest $false; return }
     $S.spin += 1.8                                   # a little flick, like a nudged globe
+    Add-Hearts
     $text = Get-NextLine
-    Show-Text $LineText $text (4.5 + 0.06 * $text.Length)
+    $hold = 4.5 + 0.06 * $text.Length
+    Show-Text $LineText $text $hold
+    Show-Soft $Face $hold                            # the eyes come and go with the words
 })
 $Hit.Add_MouseEnter({ if ($S.anchor) { $AnchorText.Text = '→ ' + $S.anchor; Fade $AnchorText 1 0.5 } })
 $Hit.Add_MouseLeave({ Fade $AnchorText 0 1.2 1.5 })

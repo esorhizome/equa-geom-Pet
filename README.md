@@ -19,7 +19,7 @@ Double-click **geom-Pet.cmd**.
 ## Touch it
 
 - **Drag** — move it anywhere.
-- **Click** — one short line, and a little spin.
+- **Click** — like a tickle: two arched eyes ( n   n ), a few small hearts and one short line appear, then gently fade.
 - **Hover** — shows your *anchor*, the one thing you're doing right now.
 - **Right-click** — the menu:
   - ⚓ anchor · ◯ breathe · △ shape · ◫ size · ♪ sound · ◐ rest · ✕ close
