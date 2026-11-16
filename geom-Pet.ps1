@@ -189,12 +189,12 @@ function New-Solid([string]$name) {
     $n = $verts.Length
 
     # distances, and the distinct lengths they come in
-    $gap = New-Object 'double[,]' $n, $n
+    $gap = New-Object 'double[]' ($n * $n)
     $lengths = New-Object System.Collections.Generic.List[double]
     for ($i = 0; $i -lt $n; $i++) {
         for ($k = $i + 1; $k -lt $n; $k++) {
             $dx = $verts[$i][0] - $verts[$k][0]; $dy = $verts[$i][1] - $verts[$k][1]; $dz = $verts[$i][2] - $verts[$k][2]
-            $len = [math]::Sqrt($dx * $dx + $dy * $dy + $dz * $dz); $gap[$i, $k] = $len
+            $len = [math]::Sqrt($dx * $dx + $dy * $dy + $dz * $dz); $gap[$i * $n + $k] = $len
             $fresh = $true
             foreach ($known in $lengths) { if ([math]::Abs($known - $len) -lt 1e-4) { $fresh = $false; break } }
             if ($fresh) { $lengths.Add($len) }
@@ -205,7 +205,7 @@ function New-Solid([string]$name) {
     $edgeList = New-Object 'System.Collections.Generic.List[int[]]'
     for ($i = 0; $i -lt $n; $i++) {
         for ($k = $i + 1; $k -lt $n; $k++) {
-            if ([math]::Abs($gap[$i, $k] - $edgeLen) -lt 1e-4) { $edgeList.Add([int[]]@($i, $k)) }
+            if ([math]::Abs($gap[$i * $n + $k] - $edgeLen) -lt 1e-4) { $edgeList.Add([int[]]@($i, $k)) }
         }
     }
 
@@ -245,8 +245,8 @@ function Get-NextLine {
     switch ($pick) {
         '{euler}' {
             $g = $S.geo; $nv = $g.V.Length; $ne = $g.E.Length; $nf = $g.F
-            if ($nv - $ne + $nf -eq 2) { "$nv corners, $ne edges, $nf faces.`n$nv, take away $ne, add $nf: always 2." }
-            else { "$nv corners, $ne edges, $nf faces.`n$nv, take away $ne, add $nf: 4.`nTwo tetrahedra, 2 each." }
+            if ($nv - $ne + $nf -eq 2) { "$nv corners, $ne edges, $nf faces.`n$nv, take away $ne, add ${nf}: always 2." }
+            else { "$nv corners, $ne edges, $nf faces.`n$nv, take away $ne, add ${nf}: 4.`nTwo tetrahedra, 2 each." }
         }
         '{thread}' {
             if ($S.anchor) { "Lost the thread?`nHover over me." }
@@ -282,12 +282,12 @@ if ($Check) {
 # ---------------------------------------------------------------- one pet at a time
 if (-not $Check) {
     $created = $false
-    $Mutex = New-Object System.Threading.Mutex($true, 'Local\geom-Pet', [ref]$created)
+    $Mutex = [System.Threading.Mutex]::new($true, 'Local\geom-Pet', [ref]$created)
     if (-not $created) { return }
 }
 
 # ---------------------------------------------------------------- window
-Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
+Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, System.Xaml
 
 $WinXaml = @'
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
