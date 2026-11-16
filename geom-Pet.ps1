@@ -2,13 +2,13 @@
   geom-Pet  ·  part of the equa series (esorhizome)
 
   A small wireframe solid that turns slowly in a corner of the screen.
-  A soft light at its centre drifts toward your cursor, like a dog
-  in the same room, keeping an eye on you.
+  It leans a little toward your cursor, like a dog in the same room,
+  keeping an eye on you.
 
   Left-drag ...... move it
   Click .......... one short line (and a little spin)
   Hover .......... shows your anchor (the one thing you're doing)
-  Right-click .... anchor · breathe · shape · size · sound · rest · close
+  Right-click .... anchor · breathe · shape · size (a slider) · sound · rest · close
 
   Run:  geom-Pet.cmd   (or: powershell -STA -File geom-Pet.ps1)
   Test: powershell -STA -File geom-Pet.ps1 -Check
@@ -106,7 +106,11 @@ $S = @{
     lastCursor = $null; lastMove = 0.0; fallback = $false; renderErr = $false
     bag = $null; lastLine = ''
 }
-$Sizes      = [ordered]@{ small = 120; medium = 160; large = 220 }
+# Size is a slider: from small, up to a solid about half the screen's height.
+# (The solid is drawn about 0.6 of its square, so the largest square = height * 0.85.)
+Add-Type -AssemblyName PresentationFramework
+$SizeMin = 100
+$SizeMax = [math]::Max(400, [int][math]::Round([System.Windows.SystemParameters]::PrimaryScreenHeight * 0.85))
 # Thirteen solids, picked from equanim's polyhedra library (bt_vfx FractalMesh._base):
 # the five Platonic solids, the star of two tetrahedra, and seven gentle relatives.
 # Nothing past 60 edges, so the pet stays light. F = faces, for the Euler line.
@@ -133,7 +137,7 @@ if (Test-Path $SettingsFile) {
         foreach ($key in 'size', 'solid', 'sound', 'anchor', 'left', 'top') {
             if ($null -ne $j.$key) { $S[$key] = $j.$key }
         }
-        if ($Sizes.Values -notcontains [int]$S.size) { $S.size = 160 }
+        $S.size = [math]::Max($SizeMin, [math]::Min($SizeMax, [int]$S.size))
         if ($SolidNames -notcontains $S.solid)       { $S.solid = 'cube' }
         $S.size = [int]$S.size; $S.sound = [bool]$S.sound; $S.anchor = [string]$S.anchor
     } catch { Write-Log "settings unreadable, using defaults: $_" }
@@ -406,18 +410,31 @@ $EKF    = [System.Windows.Media.Animation.EasingDoubleKeyFrame]
 $Tones = @{}
 function Initialize-Sound {
     foreach ($nm in 'up', 'down') {
-        $root  = if ($nm -eq 'up') { 587.33 } else { 440.0 }   # D5+A5 to open, A4+E5 to close
-        $bytes = [GeomPetSound]::Bell($root, 2.8, 0.42)
+        # The recorded tones in sounds\ (open = higher, close = lower) are used when
+        # they are there. Without them, a soft bell is made in code instead.
+        $shipped = Join-Path $PSScriptRoot ('sounds\' + $(if ($nm -eq 'up') { 'open.wav' } else { 'close.wav' }))
+        $bytes = $null
+        if (Test-Path -LiteralPath $shipped) {
+            try { $bytes = [IO.File]::ReadAllBytes($shipped) } catch { Write-Log "sound file: $_" }
+        }
+        if (-not $bytes) {
+            $root  = if ($nm -eq 'up') { 587.33 } else { 440.0 }   # D5+A5 to open, A4+E5 to close
+            $bytes = [GeomPetSound]::Bell($root, 2.8, 0.42)
+        }
+        $secs = 2.8
+        try { $secs = ($bytes.Length - 44) / [double][BitConverter]::ToInt32($bytes, 28) } catch {}
         $path  = Join-Path $DataDir "$nm.wav"
         try { [IO.File]::WriteAllBytes($path, $bytes) } catch { Write-Log "wav write: $_" }
         $pool = @()
         for ($i = 0; $i -lt 3; $i++) {
             $mp = New-Object System.Windows.Media.MediaPlayer
             $mp.Add_MediaFailed({ $S.fallback = $true; Write-Log "media player failed; using fallback" })
+            $mp.Add_MediaEnded({ param($sender, $e) $sender.Pause(); $sender.Position = [TimeSpan]::Zero })
             $mp.Open([Uri]$path); $mp.Volume = 0.85
+            $mp.Pause()                                   # loaded and waiting, not cold
             $pool += $mp
         }
-        $Tones[$nm] = @{ bytes = $bytes; pool = $pool; i = 0 }
+        $Tones[$nm] = @{ bytes = $bytes; pool = $pool; i = 0; secs = $secs }
     }
 }
 function Play-Tone([string]$nm) {
@@ -429,7 +446,7 @@ function Play-Tone([string]$nm) {
             $S.player.Play(); return
         }
         $mp = $T.pool[$T.i]; $T.i = ($T.i + 1) % $T.pool.Count   # a few players, so tones can overlap like bells
-        $mp.Stop(); $mp.Play()
+        $mp.Position = [TimeSpan]::Zero; $mp.Play()
     } catch { Write-Log "tone: $_" }
 }
 
@@ -472,7 +489,6 @@ function Build-Lines {
         $ln.StrokeStartLineCap = 'Round'; $ln.StrokeEndLineCap = 'Round'
         [void]$Shape.Children.Add($ln); $lines[$k] = $ln
     }
-    [void]$Shape.Children.Add($Core)
     $S.lines = $lines
 }
 
@@ -486,12 +502,13 @@ function Set-Solid([string]$name, [switch]$Soft) {
 }
 
 function Set-Size([int]$px) {
-    $oldW = $win.Width
+    $oldW = $win.Width; $oldSize = $Stage.Height
     $S.size = $px
     $Stage.Width = $px; $Stage.Height = $px
     $win.Width  = [math]::Max(260, $px + 40)
     $win.Height = $px + 96
     $win.Left  += ($oldW - $win.Width) / 2
+    $win.Top   += ($oldSize - $px) / 2
     $AnchorText.MaxWidth = $win.Width - 20; $LineText.MaxWidth = $win.Width - 20
 }
 
@@ -512,12 +529,18 @@ function Close-Pet {
     $S.closing = $true
     Save-Settings
     Play-Tone 'down'
-    Fade $win 0 1.6 0 { $win.Close() }
+    Fade $win 0 1.6
+    # stay (unseen) until the closing tone has finished ringing, then leave
+    $wait = 1.7
+    if ($S.sound -and $Tones['down']) { $wait = [math]::Max(1.7, $Tones['down'].secs + 0.2) }
+    $bye = New-Object System.Windows.Threading.DispatcherTimer
+    $bye.Interval = [TimeSpan]::FromSeconds($wait)
+    $bye.Add_Tick({ param($sender, $e) $sender.Stop(); $win.Close() })
+    $bye.Start()
 }
 
 # ---------------------------------------------------------------- gaze
-# A soft light inside the shape drifts toward your cursor, and the whole solid
-# leans a little that way. When the cursor has been still for four minutes and
+# The whole solid leans a little toward your cursor. When the cursor has been still for four minutes and
 # then moves again, the shape gives a small spin: you're back.
 function Update-Gaze([double]$t, [double]$dt) {
     $c = [GeomPetNative]::Cursor()
@@ -630,10 +653,23 @@ $ShapeMenu = Add-MenuItem $Menu '△   shape' $null
 foreach ($nm in $SolidNames) {
     [void](Add-MenuItem $ShapeMenu $nm { param($sender, $e) Play-Tone 'up'; Set-Solid $sender.Tag -Soft; Save-Settings } $nm)
 }
-$SizeMenu = Add-MenuItem $Menu '◫   size' $null
-foreach ($key in $Sizes.Keys) {
-    [void](Add-MenuItem $SizeMenu $key { param($sender, $e) Play-Tone 'up'; Set-Size $sender.Tag; Save-Settings } $Sizes[$key])
-}
+$SizeItem = New-Object System.Windows.Controls.MenuItem
+$SizeItem.StaysOpenOnClick = $true
+$SizePanel = New-Object System.Windows.Controls.StackPanel
+$SizePanel.Orientation = 'Horizontal'
+$SizeLabel = New-Object System.Windows.Controls.TextBlock
+$SizeLabel.Text = '◫   size'; $SizeLabel.VerticalAlignment = 'Center'
+$SizeSlider = New-Object System.Windows.Controls.Slider
+$SizeSlider.Minimum = $SizeMin; $SizeSlider.Maximum = $SizeMax
+$SizeSlider.Width = 170; $SizeSlider.Margin = New-Object System.Windows.Thickness 14, 0, 0, 0; $SizeSlider.VerticalAlignment = 'Center'
+$SizeSlider.IsMoveToPointEnabled = $true
+[void]$SizePanel.Children.Add($SizeLabel); [void]$SizePanel.Children.Add($SizeSlider)
+$SizeItem.Header = $SizePanel
+[void]$Menu.Items.Add($SizeItem)
+$SizeSlider.Add_ValueChanged({
+    if ($S.syncing) { return }
+    Set-Size ([int][math]::Round($SizeSlider.Value))
+})
 $SoundItem = Add-MenuItem $Menu '♪   sound' {
     $S.sound = -not $S.sound
     if ($S.sound) { Play-Tone 'up' }
@@ -648,20 +684,21 @@ $RestItem = Add-MenuItem $Menu '◐   rest' {
 $Menu.Add_Opened({
     Play-Tone 'up'
     foreach ($mi in $ShapeMenu.Items) { $mi.IsChecked = ($mi.Tag -eq $S.solid) }
-    foreach ($mi in $SizeMenu.Items)  { $mi.IsChecked = ($mi.Tag -eq $S.size) }
+    $S.syncing = $true; $SizeSlider.Value = $S.size; $S.syncing = $false
     $SoundItem.IsChecked = $S.sound
     $RestItem.IsChecked  = $S.rest
 })
+$Menu.Add_Closed({ if (-not $S.closing) { Save-Settings } })
 $Hit.ContextMenu = $Menu
 
 # ---------------------------------------------------------------- mouse
 $Hit.Add_MouseLeftButtonDown({
     param($sender, $e)
+    Play-Tone 'up'                                   # the press itself answers, at once
     $x0 = $win.Left; $y0 = $win.Top
     try { $win.DragMove() } catch {}
     $moved = ([math]::Abs($win.Left - $x0) + [math]::Abs($win.Top - $y0)) -gt 3
     if ($moved) { Save-Settings; return }
-    Play-Tone 'up'
     if ($S.rest) { Set-Rest $false; return }
     $S.spin += 1.8                                   # a little flick, like a nudged globe
     $text = Get-NextLine

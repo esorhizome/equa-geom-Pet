@@ -4,7 +4,7 @@
 
 A small wireframe solid that sits in a corner of your screen and turns slowly.
 
-A soft light inside it drifts toward your cursor, like a dog in the same room keeping an eye on you.
+It leans a little toward your cursor, like a dog in the same room keeping an eye on you.
 
 It asks for nothing. It only answers when you touch it.
 
@@ -23,6 +23,7 @@ Double-click **geom-Pet.cmd**.
 - **Hover** — shows your *anchor*, the one thing you're doing right now.
 - **Right-click** — the menu:
   - ⚓ anchor · ◯ breathe · △ shape · ◫ size · ♪ sound · ◐ rest · ✕ close
+- **Size** — a slider in the menu, from small up to about half the screen's height.
 
 ---
 
@@ -48,9 +49,11 @@ None of them has more than 60 edges, so the pet stays light.
 
 ## Sound
 
-A soft bell is made fresh each time it starts: root, fifth and octave, a gentle rise, then a long fade.
+Two recorded tones, made by esorhizome in FL Studio Mobile (MiniSynth "Fifth", filtered, with reverb).
 
-It rings higher to open and lower to close.
+The higher one opens. The lower one closes.
+
+They live in `sounds/`. If that folder is missing, the pet makes a soft bell in code instead.
 
 **♪ sound** in the menu turns it off.
 
