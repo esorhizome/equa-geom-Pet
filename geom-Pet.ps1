@@ -522,7 +522,7 @@ function Build-Lines {
     $S.lines = $lines
 }
 
-# Two small arches for eyes:  n   n  (the top half of a circle each).
+# Two small arches for eyes:  n   n  (the top half of a circle each): happy, closed eyes.
 # They are only seen for a while after a click, like a tickle.
 function Update-Face {
     $Face.Children.Clear()
@@ -539,20 +539,24 @@ function Update-Face {
     $S.eyes = $eyes; $S.eyeR = $r
 }
 
-# Two or three small hearts drift up from the top of the shape, then fade.
-function Add-Hearts {
+# Two or three small hearts open out from the middle of the shape, slow down,
+# and fade: a soft burst that stays inside the shape's own outline.
+function Add-Hearts([double]$delay = 0) {
     $count = Get-Random -Minimum 2 -Maximum 4
     for ($i = 0; $i -lt $count; $i++) {
-        $w = [math]::Max(10.0, $S.size * (0.06 + 0.04 * (Get-Random -Maximum 100) / 100))
+        $w = [math]::Max(9.0, $S.size * (0.05 + 0.03 * (Get-Random -Maximum 100) / 100))
+        # directions fan across the upper half: up-left, up, up-right (never down over the words)
+        $deg = -150 + ($i + 0.5) * (120 / $count) + ((Get-Random -Maximum 200) - 100) / 10
+        $reach = $S.size * (0.12 + 0.05 * (Get-Random -Maximum 100) / 100)
         $el = New-Object System.Windows.Shapes.Path
         $el.Data = $HeartGeo; $el.Stretch = 'Uniform'; $el.Width = $w; $el.Height = $w
         $el.Stroke = $HeartBrush; $el.StrokeThickness = 1.3; $el.StrokeLineJoin = 'Round'; $el.Opacity = 0
         [void]$Hearts.Children.Add($el)
         [void]$S.hearts.Add(@{
-            el = $el; w = $w; age = -0.45 * $i; life = 3.4
-            x = $S.size / 2 + $S.size * 0.16 * ((Get-Random -Maximum 200) - 100) / 100
-            y = $S.size * 0.30; vy = $S.size * 0.085; wob = $S.size * 0.02
-            ph = (Get-Random -Maximum 628) / 100
+            el = $el; w = $w; age = -($delay + 0.3 * $i); life = 3.2
+            x = $S.size / 2; y = $S.size * 0.46
+            dx = [math]::Cos($deg * [math]::PI / 180) * $reach
+            dy = [math]::Sin($deg * [math]::PI / 180) * $reach
         })
     }
 }
@@ -564,13 +568,13 @@ function Update-Hearts([double]$dt) {
         if ($h.age -lt 0) { continue }
         $q = $h.age / $h.life
         if ($q -ge 1) { $Hearts.Children.Remove($h.el); $S.hearts.RemoveAt($i); continue }
-        $h.y -= $h.vy * $dt
-        $x = $h.x + [math]::Sin($h.age * 2.2 + $h.ph) * $h.wob
+        $go = 1 - [math]::Pow(1 - $q, 3)             # quick at first, then easing to rest
+        $x = $h.x + $h.dx * $go; $y = $h.y + $h.dy * $go
         # gentle entry, gentle exit: a slow smooth rise in, a long smooth fade out
         $in = [math]::Min(1, $q / 0.25); $out = [math]::Min(1, (1 - $q) / 0.45)
         $h.el.Opacity = 0.9 * ($in * $in * (3 - 2 * $in)) * ($out * $out * (3 - 2 * $out))
         $Canvas::SetLeft($h.el, $x - $h.w / 2)
-        $Canvas::SetTop($h.el, $h.y - $h.w / 2)
+        $Canvas::SetTop($h.el, $y - $h.w / 2)
     }
 }
 
@@ -593,6 +597,8 @@ function Set-Size([int]$px) {
     $win.Top   += ($oldSize - $px) / 2
     $AnchorText.MaxWidth = $win.Width - 20; $LineText.MaxWidth = $win.Width - 44
     # the line of text sits in the middle of the shape, just under the eyes
+    # only the shape itself answers a click, not the empty space around it
+    $Hit.Width = $px * 0.64; $Hit.Height = $px * 0.64
     $LineHost.Height = $px
     $LinePlate.Margin = New-Object System.Windows.Thickness 0, ($px * 0.22), 0, 0
     $LineText.FontSize = [math]::Max(13.5, [math]::Min(20.5, $px * 0.042))
