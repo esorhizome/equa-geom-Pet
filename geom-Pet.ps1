@@ -319,13 +319,11 @@ $WinXaml = @'
       <Canvas x:Name="Hearts" IsHitTestVisible="False"/>
     </Grid>
     <Grid x:Name="LineHost" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Top" Height="160" IsHitTestVisible="False">
-      <TextBlock x:Name="LineText" Opacity="0" FontFamily="Segoe UI" FontSize="14"
-                 Foreground="#F2F4F6" TextWrapping="Wrap" TextAlignment="Center" MaxWidth="240"
-                 HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,36,0,0">
-        <TextBlock.Effect>
-          <DropShadowEffect Color="#000000" BlurRadius="8" ShadowDepth="0" Opacity="0.95"/>
-        </TextBlock.Effect>
-      </TextBlock>
+      <Border x:Name="LinePlate" Opacity="0" Background="#A6101318" BorderBrush="#2EFFFFFF" BorderThickness="1"
+              CornerRadius="2" Padding="11,6,11,7" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,36,0,0">
+        <TextBlock x:Name="LineText" FontFamily="Times New Roman, Georgia, serif" FontStyle="Italic" FontSize="14"
+                   Foreground="#F2F4F6" TextWrapping="Wrap" TextAlignment="Center" MaxWidth="216"/>
+      </Border>
     </Grid>
     <StackPanel Grid.Row="1" HorizontalAlignment="Center" IsHitTestVisible="False" Margin="0,4,0,0">
       <StackPanel.Effect>
@@ -408,6 +406,7 @@ $Hit        = $win.FindName('Hit')
 $Shape      = $win.FindName('Shape')
 $AnchorText = $win.FindName('AnchorText')
 $LineText   = $win.FindName('LineText')
+$LinePlate  = $win.FindName('LinePlate')
 $LineHost   = $win.FindName('LineHost')
 $Face       = $win.FindName('Face')
 $Hearts     = $win.FindName('Hearts')
@@ -592,11 +591,11 @@ function Set-Size([int]$px) {
     $win.Height = $px + 96
     $win.Left  += ($oldW - $win.Width) / 2
     $win.Top   += ($oldSize - $px) / 2
-    $AnchorText.MaxWidth = $win.Width - 20; $LineText.MaxWidth = $win.Width - 20
+    $AnchorText.MaxWidth = $win.Width - 20; $LineText.MaxWidth = $win.Width - 44
     # the line of text sits in the middle of the shape, just under the eyes
     $LineHost.Height = $px
-    $LineText.Margin = New-Object System.Windows.Thickness 0, ($px * 0.22), 0, 0
-    $LineText.FontSize = [math]::Max(14, [math]::Min(22, $px * 0.045))
+    $LinePlate.Margin = New-Object System.Windows.Thickness 0, ($px * 0.22), 0, 0
+    $LineText.FontSize = [math]::Max(13.5, [math]::Min(20.5, $px * 0.042))
     Update-Face
 }
 
@@ -796,7 +795,8 @@ $Hit.Add_MouseLeftButtonDown({
     Add-Hearts
     $text = Get-NextLine
     $hold = 4.5 + 0.06 * $text.Length
-    Show-Text $LineText $text $hold
+    $LineText.Text = $text
+    Show-Soft $LinePlate $hold                       # words on a soft dark plate, readable over anything
     Show-Soft $Face $hold                            # the eyes come and go with the words
 })
 $Hit.Add_MouseEnter({ if ($S.anchor) { $AnchorText.Text = '→ ' + $S.anchor; Fade $AnchorText 1 0.5 } })
