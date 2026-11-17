@@ -860,6 +860,9 @@ $Hit.Add_MouseLeftButtonDown({
     $S.tickT = $now; $S.fastUntil = $now + $hold + 2.6
     Add-Hearts ($BlinkStart + $BlinkClosed)          # the hearts open out as the eyes close
     $LineText.Text = $text
+    # words lean in italics; a lone heart stands upright
+    $LineText.FontStyle = [System.Windows.FontStyles]::Italic
+    if ($text.Trim() -eq [string][char]0x2764) { $LineText.FontStyle = [System.Windows.FontStyles]::Normal }
     Show-Soft $LinePlate $hold                       # words on a soft dark plate, readable over anything
     Show-Soft $Face $hold                            # the eyes come and go with the words
 })

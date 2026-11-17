@@ -56,6 +56,8 @@ Add your own on a new row. Put `|` where the words should break onto a new row.
 
 Close the pet and start it again to see new lines.
 
+Where each fact comes from, and how it was checked: [SOURCES.md](SOURCES.md).
+
 ---
 
 ## Sound

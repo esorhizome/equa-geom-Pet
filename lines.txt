@@ -2,11 +2,14 @@
 # Put  |  where the words should break onto a new row.
 # Rows that start with # are notes, and are never shown.
 # {thread} and {euler} are two special lines the pet writes itself.
+#
+# 364 lines in all: 104 kind ones, 52 hearts, 104 from maths, 104 from physics.
 
+# ---- kind lines, part one (42) ----
 Just the next small step.
 Too much at once? | Pick the smallest piece.
 Write down where you are. | Then breathe.
-You don't have to hold it all. | Let a list hold it.
+You don’t have to hold it all. | Let a list hold it.
 Take your time.
 Maybe close one tab. Just one.
 Drop your shoulders. | Unclench your jaw.
@@ -15,21 +18,365 @@ A sip of water might help.
 {thread}
 {euler}
 The shape keeps turning, | even on foggy days.
-Pomodoro might help | maintain momentum.
+Recalibrate for a moment, | then maintain momentum.
 Do it for you.
 You know what? | I believe in you.
-You know what? | You've got this.
+You know what? | You’ve got this.
 Just breathe.
-It's safe to take time | to figure it out.
+It’s safe to take time | to figure it out.
 Hey, that was cute, | thank you.
-Today is a good day. | You make it good.
-I'm grateful | that you're here.
+Today is a good day. | You make it better.
+I’m grateful | that you’re here.
 Breathe in, | breathe out.
 Some light stretching | might help.
 You will get this done.
 You will finish.
 Keep moving forward.
-I think you're capable | of getting this done.
+I think you’re capable | of getting this done.
 Tidy approach, | tidy results.
 Take one calm step, | then take another.
 No matter what... | Do the work anyway.
+BEAST MODE | with love.
+Keep going.
+Patience is key.
+Perseverance = patience + time.
+Look at you, | handling it.
+You will accomplish this.
+An excellent student just clicked on me. | I see you.
+A diligent worker just clicked on me. | Hey there.
+Trust the process.
+Take a breath, | now exhale.
+You’re investing in yourself.
+I like the part where you keep going.
+
+# ---- 104 from maths ----
+Add any two odd numbers. | The answer is always even.
+26 sits between a square and a cube. | 25 on one side, 27 on the other. | It is the only number that does.
+A circle is the shortest fence | around the largest field.
+0.999... and 1 | are two names | for the same number.
+Count the seed spirals on a sunflower. | Usually two neighbouring Fibonacci numbers, | like 34 and 55.
+Multiply any number from 1 up by 9. | Add up the digits of the answer. | Keep going. You always land on 9.
+There is no biggest prime. | Euclid proved that | over two thousand years ago.
+A sphere is the only solid | that looks the same | from every side.
+Shuffle a deck properly. | That order has probably | never existed before.
+Zero took centuries to invent. | Nothing was the hardest idea.
+Seven bridges in one city | started a whole branch of maths. | You cannot cross them all once.
+A Mobius strip has one side. | Draw a line along it | and you come back to the start.
+Pi is known to trillions of digits. | Thirty-nine would measure the universe | to the width of an atom.
+Honeybees build hexagons. | Most honey, | least wax.
+1, 1, 2, 3, 5, 8, 13... | Each number is | the two before it, added.
+A triangle cannot be pushed out of shape. | That is why bridges | are full of them.
+Six equals 1 + 2 + 3, | its own divisors added up. | Mathematicians call it perfect.
+Take any number. Even? Halve it. | Odd? Triple it and add one. | Every number tried lands on 1. Nobody can prove why.
+Twelve splits evenly into halves, | thirds and quarters. | Ten cannot do thirds.
+There are more ways to order 52 cards | than there are seconds | since the universe began.
+A knot in three dimensions | can be untied in four. | More room, easier problem.
+In a room of 23 people, | two probably share a birthday. | It feels wrong. It is true.
+The golden ratio: | cut a line so the big part is to the whole | as the small part is to the big.
+Primes thin out as you climb. | They never run out.
+A doughnut and a teacup | are the same shape to a topologist. | Both have one hole.
+1089 times 9 is 9801. | The same digits, backwards.
+Add 1 to 100 the quick way. | Pair the ends: 1 and 100, 2 and 99. | Fifty pairs of 101. That’s 5050.
+The equals sign was invented in 1557. | Before that, people wrote | "is equal to" in full.
+Four colours are enough | to colour any map | so no two neighbours match.
+A square’s diagonal is never | a neat fraction of its side. | Legend says it shocked the Greeks.
+A googolplex is too big to write down. | The universe has no room | for all its zeros.
+There are exactly five Platonic solids. | Not four. Not six. | A corner can only hold so many faces.
+A line has no width. | It exists only in our heads. | And yet bridges stand.
+One followed by a hundred zeros | is called a googol. | The visible universe has fewer atoms.
+Roll two dice. Seven comes up most. | Six different ways make 7. | Only one makes 12.
+2, 3, 5, 7, 11, 13... | Primes are the atoms of numbers. | Everything else is built from them.
+Put a string around the Earth. | Add one metre of slack. | It now floats 16 cm off the ground. Everywhere.
+A fractal looks the same up close | as it does far away. | Coastlines nearly do.
+Multiply 111,111,111 by itself. | You get 12345678987654321. | Up and back down again.
+A coin has no memory. | Ten tails in a row | does not change the next flip.
+Hexagons tile a floor. So do squares and triangles. | Regular pentagons cannot. | They always leave gaps.
+Imagine a shape with four dimensions. | Nobody can picture it. | The maths works anyway.
+153 is 1x1x1 + 5x5x5 + 3x3x3. | Its own digits, cubed.
+The word algebra comes from Arabic. | Al-jabr: | the reuniting of broken parts.
+Zero factorial equals one. | There is exactly one way | to arrange nothing.
+Drop a map of this room on the floor. | One point on it | sits exactly above the place it shows.
+Square numbers end in | 0, 1, 4, 5, 6 or 9. | Never 2, 3, 7 or 8.
+Roman numerals have no zero. | Try long division in them.
+A triangle’s angles add to 180 degrees. | On a ball they add to more. | The surface changes the rules.
+Three straight cuts through a cake | can make eight pieces. | Think of the corner of a cube.
+One seventh is 0.142857142857... | The same six digits, | forever.
+Start with one penny. | Double it every day for a month. | You end with over five million pounds.
+The number 1 is not prime. | If it were, every number | could be built two ways.
+An icosahedron has twenty faces. | The role-playing dice | borrowed it from Plato.
+Numbers that read the same backwards | are palindromes. | 2002 was one. 2112 will be.
+There is no most boring number. | The first one | would be interesting for that.
+In English, four is the only number | spelled with as many letters | as it counts.
+A circle’s edge divided by its width | always gives pi. | Big circle, small circle, same answer.
+Draw every diagonal in a pentagon. | There are five, | and they make a star.
+One grain of rice on the first square, | doubling across a chessboard, | would bury a small country.
+Two is the only even prime. | The loneliest one in the club.
+1 + 2 + 3 + 4 + 5 + 6 + 7 + 8x9 | makes exactly 100.
+Mathematicians call a proof elegant | when it is short and surprising. | Beauty is a real test.
+The infinity symbol | is a sideways 8. | John Wallis drew it in 1655.
+Fold paper in half 42 times | and it would reach the Moon. | Doubling is that fierce.
+A right angle is a quarter turn. | Four of them bring you home.
+Take any three digits, repeat them: 123123. | That always divides | by 7, by 11 and by 13.
+In Pascal’s triangle, | each number is the two above it, added. | Whole worlds hide in there.
+Add the odd numbers in order. | 1, then 4, then 9, then 16. | Every answer is a square.
+The shortest path on a globe | looks curved on a flat map. | Pilots fly it anyway.
+42 has no special meaning in maths. | That is part of the joke.
+A number divides by 3 | when its digits add to a multiple of 3. | Try 171. That’s 9.
+On a curved surface, the shortest path | is called a geodesic. | Light follows them through bent space.
+Euler is one of the most prolific | mathematicians ever. | Nearly half came after he lost his sight.
+11 x 23 = 253. | The 2 and 3 step apart, | and their sum, 5, sits between them.
+In base two, every number | is made of only 0 and 1. | Computers find that restful.
+Any three points lie on one circle. | Unless they sit in a straight line.
+Slice a cube at just the right tilt | and the cut is a perfect hexagon.
+You cannot comb a hairy ball flat. | Somewhere there is always a parting.
+Multiply the digits of 77. | You get 49, then 36, then 18, then 8. | Four steps to one digit.
+A circle has infinite lines of symmetry. | Every way you fold it works.
+1 and 0 are the only numbers | that equal their own square.
+Measure a coastline with a shorter ruler | and it gets longer. | That is not a mistake.
+The plus sign most likely grew from "et", | Latin for "and", | written in a hurry.
+In any group of six people, | three all know each other, | or three are all strangers.
+A 3-4-5 triangle has a perfect right angle. | Builders still use it | to check a corner is square.
+In 1999, mathematicians counted | 85 ways to tie a tie. | A 2014 recount found 177,147.
+Square a number ending in 5. | 35 x 35: three times four is twelve, | then stick 25 on the end. 1225.
+A hotel with infinite rooms is full. | A new guest still gets a room. | Everyone shifts along one.
+Lines that never meet are parallel. | On a sphere, there are none.
+The Babylonians counted in sixties. | That is why an hour | has sixty minutes.
+Take a square. Double its sides. | The area becomes four times bigger. | Not twice.
+Zero is an even number. | It splits into two equal halves: | nothing and nothing.
+A shape with a hundred sides | looks just like a circle | from across the room.
+Between 0 and 1 there are more numbers | than there are whole numbers. | Cantor proved it.
+Two primes two apart are twins. | 11 and 13. 17 and 19. | Nobody knows if they ever stop.
+Cut a circle into thin wedges. | Lay them top to tail. | They make almost a rectangle. That’s the area.
+A tetrahedron is the simplest solid. | Four points, | and space has a shape.
+Every even number above 2, tried so far, | is two primes added together. | Nobody has proved it must be.
+A proof does not expire. | What Euclid showed is still true | and always will be.
+The English alphabet has 26 letters. | 26 is also 2 times 13. | Small numbers, holding a lot.
+Every whole number above 1 | has a prime fingerprint. | Only one set of primes makes it.
+Roll a coin around a coin the same size. | A point on its rim traces a heart. | It is called a cardioid.
+Infinity comes in sizes. | Some infinities | are bigger than others.
+
+# ---- kind lines, part two (12) ----
+Just keep swimming.
+It’s important to remember: | You. Are. Worth. It.
+It’s a pleasant day | because you’re here.
+Beautiful process, | beautiful results.
+Be like water | making its way through cracks.
+Improved you, | improved results.
+The journey is a destination, too.
+Where there’s no path, | lay one stone, then another.
+A magnificent bloom, | that’s you.
+Easy now. | You’re doing fine.
+Uniqueness permitted.
+You’ll get what you need.
+
+# ---- fifty headpats ----
+Look at you, focused.
+You’re doing lovely work.
+I’m glad you’re here.
+There you are, | doing the thing.
+Proud of you, | right now.
+Your mind is a good place to be.
+You matter, | mid-task and all.
+Steady hands. | Good heart.
+Quietly brilliant.
+Keep that lovely focus.
+You bring such care to this.
+A thoughtful mind, | busy at work.
+You’re worth the care | you’re giving.
+Here’s a little headpat.
+Hey. | You’re doing it.
+Your care shows.
+Look at you, | building something.
+This is you, | growing.
+You’re good company.
+Such a capable mind.
+Bit by bit, | it’s taking shape.
+Your effort is beautiful.
+You belong here.
+A gentle nudge: | onward.
+Sending you a little warmth.
+That focus suits you.
+You’re someone worth cheering for.
+Every bit you do | is yours to keep.
+Your work has your fingerprints. | They’re lovely.
+Such patient hands.
+Bright mind, | soft heart.
+Carry on, lovely.
+You make this space better.
+You’re learning beautifully.
+You’re doing well. | Truly.
+What a good mind you have.
+Onward, | with care.
+You are worth | every kindness.
+Forehead kiss. | Back to it.
+You’re precious. | So is this work.
+Glad it’s you | doing this.
+Clear thinking, | lovely work.
+A bright idea | is on its way.
+You’re making something good.
+Keep shining, | quietly.
+It’s a joy | to watch you work.
+Thank you | for being you.
+Warmth sent. | Back to the good stuff.
+Whatever you’re making, | it’s lucky to have you.
+You’re cared for, | right this minute.
+
+# ---- fifty-two quiet ones ----
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+❤
+
+# ---- 104 from physics ----
+A capacitor is a tiny bucket for charge. | It fills slowly | and empties in a blink.
+Light takes eight minutes to reach us. | The sunshine on your desk | is eight minutes old.
+Hot water sometimes seems to freeze | faster than cold. | Scientists still argue whether, and why.
+The carbon and oxygen in you | were made inside stars | long ago.
+Sound is air being pushed. | A wave of nudges, | passed along.
+A feather and a hammer | land together | when there is no air in the way.
+Glass is a solid, not a slow liquid. | Old windows are thick at the bottom | because of how they were made.
+Nothing with mass reaches light speed. | The closer it gets, | the more each push costs.
+Heat always flows to the colder thing. | Never the other way, | not on its own.
+Rub your hands. They warm. | Motion turning into heat | is the oldest trick there is.
+The sky is blue | because air scatters blue light | more than red.
+A rainbow is a full circle. | The ground hides the bottom half.
+A mirror does not swap left and right. | It swaps front and back. | Your brain does the rest.
+A moving magnet makes electricity. | That is nearly every power station, | simplified.
+Ice floats because water swells when it freezes. | Very few things do that.
+Your weight is a force. | Your mass is how much of you there is. | On the Moon, only one changes.
+Lightning heats the air to 30,000 degrees. | Five times hotter | than the surface of the Sun.
+Thunder is air bursting outward. | Lightning heats it | in a split second.
+A spinning skater pulls her arms in | and speeds up. | The spin had nowhere else to go.
+Energy is never lost. | It only changes clothes.
+Noise-cancelling headphones | play the opposite wave. | Two sounds adding up to quiet.
+A rubber band warms when you stretch it. | Press it to your lip and feel.
+Air has weight. | About a kilogram presses | on every square centimetre of you.
+The Earth is falling around the Sun. | It just keeps missing.
+A microwave makes water molecules spin. | All that jostling | is the warmth.
+Blue light carries more energy | per wave than red. | Same light, busier.
+A static shock is electrons going home. | You picked them up from the carpet.
+Space is cold but chills you slowly. | There is nothing out there | to carry the heat away.
+Your body glows in infrared. | A thermal camera | sees you in the dark.
+A helium balloon rises | because the air around it sinks. | It is pushed up, not pulled.
+Friction is why you can walk. | Ice takes it away | and your plan stops working.
+A pendulum’s swing time | depends on its length, | not on its weight.
+Sound travels faster through water. | Whales talk across oceans.
+The Moon drifts away | about four centimetres a year. | Slowly saying goodbye.
+Reverb spreads a sound’s energy over time. | Same energy, longer tail, | gentler peak.
+Metal feels colder than wood | at the same temperature. | It pulls heat from you faster.
+A photon has no mass | and still pushes. | Sunlight can sail a spacecraft.
+The Sun turns four million tonnes of itself | into energy | every second.
+Water boils at a lower temperature | up a mountain. | Less air pressing down.
+Electricity is not like water in a pipe. | The push travels fast. | The electrons shuffle slowly.
+A bicycle stays upright | mostly because steering corrects the fall, | over and over.
+Absolute zero is as cold as cold gets. | Nobody has ever reached it.
+You cannot push a rope. | Tension only pulls.
+A tuning fork’s two prongs | move apart and together. | That wobble is the note.
+Glass bends light because light slows in it. | A straw in water | looks broken.
+Every object pulls on every other object. | Even you and your chair.
+Soap works because one end loves water | and the other end loves grease. | It holds both at once.
+A black hole is not a hole. | It is a place where gravity | won the argument.
+Time runs at a different speed | for satellites. | GPS corrects for it, or maps would drift.
+The colour of a hot thing | tells you its temperature. | Red is cooler. White is hotter.
+A wave crosses a crowd | without anyone | moving house.
+Snow is quiet. | All those tiny gaps | swallow the sound.
+Diamond and pencil lead | are the same atom. | Only the arrangement differs.
+A drum sounds different in a small room. | The room is part of the instrument.
+Wind is air moving | from a crowded place | to a less crowded one.
+Shout at a wall a hundred metres away. | The echo takes | a bit over half a second.
+A spring stores energy in its bends. | Let go | and it gives nearly all of it back.
+Light bends a little around edges. | That is diffraction. | Even sharp shadows have faint ripples.
+Mains electricity swings back and forth | fifty or sixty times a second, | depending where you live.
+Insulation does not keep the cold out. | It keeps the heat in. | Same thing, kinder framing.
+A gyroscope resists being tipped. | Spinning things | have opinions about direction.
+Boiling and evaporating differ. | A puddle dries | without ever reaching 100 degrees.
+Your eye can sometimes sense | a single photon. | The smallest bit of light there is.
+Tides happen because the Moon pulls harder | on the near side of Earth | than the far side.
+A tighter string sounds higher. | Tension makes the waves | travel faster.
+Carbon dioxide is heavier than air. | It settles into low places.
+Light in glass travels | at about two thirds | of its speed in space.
+A hot air balloon rises | because warm air is thinner. | Less stuff in the same space.
+Things in motion stay in motion. | The universe has no brakes, | only friction.
+Rain falls at a steady speed. | Air resistance balances gravity | within seconds.
+A whip cracks | because its tip | breaks the sound barrier.
+Vibration is sound you feel | instead of hear. | Same wave, different sense.
+A prism does not add colour. | It separates | what was already there.
+Your screen makes every colour | from only red, green | and blue dots.
+Gravity is weak. | A small magnet lifts a pin | against the pull of the whole Earth.
+A pressure cooker gets hotter than boiling. | Trapped steam | raises the boiling point.
+The Earth’s core is about as hot | as the surface of the Sun. | We stand on a furnace.
+A laser is light marching in step. | Ordinary light wanders.
+An antenna is cut to fit a wave. | That is why | they come in different sizes.
+Hearing works by tiny hairs bending. | Each one listens | for its own pitch.
+A sonic boom is not one bang. | It is a constant one, | trailing behind.
+Flames are shaped by gravity. | In space, | they are little spheres.
+A siren rises as it comes toward you | and drops as it goes away. | The waves bunch up, then stretch.
+Two speakers can cancel each other out. | Move one step sideways | and the sound returns.
+The bottom of a rolling wheel | is still, | for an instant, every turn.
+Oil and water do not mix | because water molecules | would rather hold each other.
+A superconducting loop carries current | for years, losing almost nothing. | It just has to be very cold.
+Your bones are piezoelectric. | They make a tiny voltage | when you move.
+Light is a wave and a particle. | It depends how you look. | Physics shrugged and accepted it.
+A satellite is weightless | because it is falling, | and so is everything inside it.
+Colour is not in the object. | It is in the light | the object refuses to absorb.
+A spoon in hot soup warms along its length. | Metal passes heat | atom to atom.
+Wet sand is firm. | The water pulls | the grains together.
+A ball bounces lower each time. | The missing height left | as heat and sound.
+Nothing is truly still. | Even at rest, | your atoms are humming.
+Fireflies glow with almost no heat. | Cold light, | made by a chemical reaction.
+A bubble is round | because a sphere holds the most air | with the least skin.
+A compass points to magnetic north, | which wanders | a few dozen kilometres a year.
+Sound cannot cross space. | There is nothing out there to push.
+A guitar’s body is the amplifier. | The string alone | is almost silent.
+Air is mostly empty space. | So are you. | So is everything.
+A thermos has a vacuum in its wall. | Heat has no way across.
+Thunder rarely carries past 15 km. | Further out, | the sound bends up and away.
+Stars twinkle. Planets do not. | Air wobbles a point of light, | but not a small disc.
