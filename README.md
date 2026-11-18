@@ -95,3 +95,9 @@ This builds every shape and the window without showing anything, and prints what
 ---
 
 *Thanks to equanim's `FractalMesh` polyhedra library, which this shelf of shapes comes from.*
+
+---
+
+## Licence
+
+CC BY 4.0 · Sarah Clemencia Gomes (esorhizome). Share and adapt it freely, with credit. The full text is in [LICENSE](LICENSE).
