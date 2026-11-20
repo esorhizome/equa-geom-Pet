@@ -843,13 +843,43 @@ $Menu.Add_Closed({ if (-not $S.closing) { Save-Settings } })
 $Hit.ContextMenu = $Menu
 
 # ---------------------------------------------------------------- mouse
+# The pet is carried by hand rather than with DragMove: Windows' own move stops a window at the
+# top edge of the screen, and the pet should be free to peek over any edge, top included.
+function Get-CursorDip {
+    $c = [GeomPetNative]::Cursor()
+    if ($null -eq $c) { return $null }
+    $p = New-Object System.Windows.Point($c[0], $c[1])
+    if ($null -ne $S.fromDevice) { $p = $S.fromDevice.Transform($p) }
+    return $p
+}
 $Hit.Add_MouseLeftButtonDown({
     param($sender, $e)
     Play-Tone 'up'                                   # the press itself answers, at once
-    $x0 = $win.Left; $y0 = $win.Top
-    try { $win.DragMove() } catch {}
-    $moved = ([math]::Abs($win.Left - $x0) + [math]::Abs($win.Top - $y0)) -gt 3
-    if ($moved) { Save-Settings; return }
+    $S.drag = @{ p0 = (Get-CursorDip); x0 = $win.Left; y0 = $win.Top; moved = $false }
+    [void]$Hit.CaptureMouse()
+    $e.Handled = $true
+})
+$Hit.Add_MouseMove({
+    param($sender, $e)
+    $d = $S.drag
+    if ($null -eq $d -or $null -eq $d.p0) { return }
+    $p = Get-CursorDip
+    if ($null -eq $p) { return }
+    $dx = $p.X - $d.p0.X; $dy = $p.Y - $d.p0.Y
+    if (-not $d.moved -and ([math]::Abs($dx) + [math]::Abs($dy)) -le 3) { return }
+    $d.moved = $true
+    $win.Left = $d.x0 + $dx; $win.Top = $d.y0 + $dy
+})
+$Hit.Add_LostMouseCapture({                          # e.g. a window popped up mid-drag
+    $d = $S.drag; $S.drag = $null
+    if ($null -ne $d -and $d.moved) { Save-Settings }
+})
+$Hit.Add_MouseLeftButtonUp({
+    param($sender, $e)
+    $d = $S.drag; $S.drag = $null
+    if ($Hit.IsMouseCaptured) { $Hit.ReleaseMouseCapture() }
+    if ($null -eq $d) { return }
+    if ($d.moved) { Save-Settings; return }
     if ($S.rest) { Set-Rest $false; return }
     $S.spin += 1.8                                   # a little flick, like a nudged globe
     $text = Get-NextLine
@@ -891,7 +921,7 @@ $vw = [System.Windows.SystemParameters]::VirtualScreenWidth
 $vh = [System.Windows.SystemParameters]::VirtualScreenHeight
 $onScreen = ($null -ne $S.left -and $null -ne $S.top -and
              $S.left -ge $vl - 40 -and $S.left -le $vl + $vw - 80 -and
-             $S.top  -ge $vt - 40 -and $S.top  -le $vt + $vh - 80)
+             $S.top  -ge $vt - $S.size + 40 -and $S.top  -le $vt + $vh - 80)   # may peek over the top
 if ($onScreen) { $win.Left = [double]$S.left; $win.Top = [double]$S.top }
 else {
     $wa = [System.Windows.SystemParameters]::WorkArea
