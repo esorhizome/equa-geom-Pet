@@ -54,6 +54,8 @@ The short lines the pet shows live in `lines.txt`, one per row.
 
 Add your own on a new row. Put `|` where the words should break onto a new row.
 
+To make a line a favourite, start its row with a number in brackets, like `[26] You belong here.` It then comes up 26 times as often as the others.
+
 Close the pet and start it again to see new lines.
 
 Where each fact comes from, and how it was checked: [SOURCES.md](SOURCES.md).

@@ -1,6 +1,7 @@
 # geom-Pet's lines. One line of text per row.
 # Put  |  where the words should break onto a new row.
 # Rows that start with # are notes, and are never shown.
+# Start a row with [26] to make it a favourite: it comes up 26 times as often.
 # {thread} and {euler} are two special lines the pet writes itself.
 #
 # 364 lines in all: 104 kind ones, 52 hearts, 104 from maths, 104 from physics.
@@ -27,25 +28,25 @@ It’s safe to take time | to figure it out.
 Hey, that was cute, | thank you.
 Today is a good day. | You make it better.
 I’m grateful | that you’re here.
-Breathe in, | breathe out.
+[26] Breathe in, | breathe out.
 Some light stretching | might help.
 You will get this done.
 You will finish.
 Keep moving forward.
 I think you’re capable | of getting this done.
-Tidy approach, | tidy results.
+[26] Tidy approach, | tidy results.
 Take one calm step, | then take another.
 No matter what... | Do the work anyway.
 BEAST MODE | with love.
 Keep going.
-Patience is key.
+[26] Patience is key.
 Perseverance = patience + time.
 Look at you, | handling it.
 You will accomplish this.
 An excellent student just clicked on me. | I see you.
 A diligent worker just clicked on me. | Hey there.
-Trust the process.
-Take a breath, | now exhale.
+[26] Trust the process.
+[26] Take a breath, | now exhale.
 You’re investing in yourself.
 I like the part where you keep going.
 
@@ -158,26 +159,26 @@ Infinity comes in sizes. | Some infinities | are bigger than others.
 # ---- kind lines, part two (12) ----
 Just keep swimming.
 It’s important to remember: | You. Are. Worth. It.
-It’s a pleasant day | because you’re here.
-Beautiful process, | beautiful results.
+[26] It’s a pleasant day | because you’re here.
+[26] Beautiful process, | beautiful results.
 Be like water | making its way through cracks.
 Improved you, | improved results.
 The journey is a destination, too.
 Where there’s no path, | lay one stone, then another.
 A magnificent bloom, | that’s you.
-Easy now. | You’re doing fine.
+[26] Easy now. | You’re doing fine.
 Uniqueness permitted.
 You’ll get what you need.
 
 # ---- fifty headpats ----
-Look at you, focused.
+[26] Look at you, focused.
 You’re doing lovely work.
 I’m glad you’re here.
 There you are, | doing the thing.
-Proud of you, | right now.
+[26] Proud of you, | right now.
 Your mind is a good place to be.
 You matter, | mid-task and all.
-Steady hands. | Good heart.
+[26] Steady hands. | Good heart.
 Quietly brilliant.
 Keep that lovely focus.
 You bring such care to this.
@@ -192,8 +193,8 @@ You’re good company.
 Such a capable mind.
 Bit by bit, | it’s taking shape.
 Your effort is beautiful.
-You belong here.
-A gentle nudge: | onward.
+[26] You belong here.
+[26] A gentle nudge: | onward.
 Sending you a little warmth.
 That focus suits you.
 You’re someone worth cheering for.

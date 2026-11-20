@@ -221,7 +221,8 @@ function New-Solid([string]$name) {
 # ---------------------------------------------------------------- the lines
 # The lines live in lines.txt, beside this script: one line of text per row,
 # with  |  where the words should break onto a new row. Rows that start with #
-# are notes. They are shuffled like a deck, so none repeats until all have been
+# are notes. A row that starts with [26] is a favourite and goes in 26 times.
+# They are shuffled like a deck, so none repeats until all have been
 # seen. Two special rows, {thread} and {euler}, are worked out live from your
 # anchor and the shape.
 # If lines.txt is missing, these three stand in.
@@ -237,7 +238,12 @@ if (Test-Path -LiteralPath $LinesFile) {
         $fromFile = @(Get-Content -LiteralPath $LinesFile -Encoding UTF8 |
             ForEach-Object { $_.Trim() } |
             Where-Object { $_ -and -not $_.StartsWith('#') } |
-            ForEach-Object { ($_ -split '\s*\|\s*') -join "`n" })
+            ForEach-Object {
+                $row = $_; $times = 1                    # [26] at the start: a favourite, 26 copies in the deck
+                if ($row -match '^\[(\d+)\]\s*(.+)$') { $times = [int]$Matches[1]; $row = $Matches[2] }
+                $text = ($row -split '\s*\|\s*') -join "`n"
+                for ($n = 0; $n -lt $times; $n++) { $text }
+            })
         if ($fromFile.Count -gt 0) { $Deck = $fromFile }
     } catch { Write-Log "lines.txt could not be read: $_" }
 }
@@ -247,7 +253,9 @@ function Get-NextLine {
         $S.bag = [System.Collections.ArrayList]@($Deck | Get-Random -Count $Deck.Count)
         if ($S.bag[0] -eq $S.lastLine -and $S.bag.Count -gt 1) { $S.bag.Reverse() }
     }
-    $pick = $S.bag[0]; $S.bag.RemoveAt(0); $S.lastLine = $pick
+    $i = 0                                           # never the same line twice in a row
+    while ($i -lt $S.bag.Count - 1 -and $S.bag[$i] -eq $S.lastLine) { $i++ }
+    $pick = $S.bag[$i]; $S.bag.RemoveAt($i); $S.lastLine = $pick
     switch ($pick) {
         '{euler}' {
             $g = $S.geo; $nv = $g.V.Length; $ne = $g.E.Length; $nf = $g.F
